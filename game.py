@@ -1,5 +1,28 @@
 import random
 
+
+class Deck: 
+    def __init__(self):
+        self._deck = self.initialize_deck()
+        
+    @property
+    def deck(self):
+        return self._deck
+    
+    def initialize_deck(self):
+        suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
+        ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace']
+        deck = [(rank, suit) for suit in suits for rank in ranks]
+        return deck
+    
+    def shuffle_deck(self):
+        random.shuffle(self.deck)
+        
+    def distribute_cards(self, player1, player2):
+        player1.deck = self.deck[:26]
+        player2.deck = self.deck[26:]
+    ...
+
 card_values = {
     '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
     'Jack': 11, 'Queen': 12, 'King': 13, 'Ace': 14
@@ -31,13 +54,11 @@ def distribute_cards(deck, player1, player2):
     
 def main():
     try:
-        deck = initialize_deck()
-        shuffled_deck = shuffle_deck(deck)
-
+        deck = Deck()
+        deck.shuffle_deck()
         player1 = Player()
         player2 = Player()
-
-        distribute_cards(shuffled_deck, player1, player2)
+        deck.distribute_cards(player1, player2)
 
         round = 1
         while len(player1.deck) > 0 and len(player2.deck) > 0:
