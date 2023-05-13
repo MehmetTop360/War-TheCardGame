@@ -1,6 +1,5 @@
 import random
 
-
 class Deck: 
     def __init__(self):
         self._deck = self.initialize_deck()
@@ -28,16 +27,6 @@ card_values = {
     'Jack': 11, 'Queen': 12, 'King': 13, 'Ace': 14
 }
 
-def initialize_deck():
-    suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
-    ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace']
-    deck = [(rank, suit) for suit in suits for rank in ranks]
-    return deck
-
-def shuffle_deck(deck):
-    random.shuffle(deck)
-    return deck
-
 class Player:
     def __init__(self):
         self.deck = []
@@ -47,11 +36,62 @@ class Player:
 
     def add_cards(self, cards):
         self.deck.extend(cards)
+        
+class GameLogic: 
+    def __init__(self, player1, player2):
+        self.player1 = player1
+        self.player2 = player2
+        
 
-def distribute_cards(deck, player1, player2):
-    player1.deck = deck[:26]
-    player2.deck = deck[26:]
-    
+    def play_round(self):
+        card1 = self.player1.draw_card()
+        card2 = self.player2.draw_card()
+
+        print("__________________________________")
+        print(f"You draw: {card1[0]} of {card1[1]}")
+        print("AI draws a card...")
+        print("__________________________________\n")
+
+        if card_values[card1[0]] > card_values[card2[0]]:
+            print("\n--------------------------------------")
+            print("You win the round!")
+            print("--------------------------------------\n")
+            self.player1.add_cards([card1, card2])
+        elif card_values[card1[0]] < card_values[card2[0]]:
+            print("\n--------------------------------------")
+            print("AI wins the round!")
+            print("--------------------------------------\n")
+            self.player2.add_cards([card1, card2])
+        else:
+            print("It's a war!")
+            self.handle_war()
+            
+    def handle_war(self):
+        face_down_cards = 3
+
+        if len(self.player1.deck) < face_down_cards + 1 or len(self.player2.deck) < face_down_cards + 1:
+            face_down_cards = min(len(self.player1.deck) - 1, len(self.player2.deck) - 1)
+
+        war_pile = []
+        for _ in range(face_down_cards):
+            war_pile.append(self.player1.draw_card())
+            war_pile.append(self.player2.draw_card())
+
+        card1 = self.player1.draw_card()
+        card2 = self.player2.draw_card()
+
+        print(f"\nYou draw: {card1[0]} of {card1[1]}")
+        print(f"AI draws: {card2[0]} of {card2[1]}")
+
+        if card_values[card1[0]] > card_values[card2[0]]:
+            print("\nYou win the war!")
+            self.player1.add_cards(war_pile + [card1, card2])
+        elif card_values[card1[0]] < card_values[card2[0]]:
+            print("\nAI wins the war!")
+            self.player2.add_cards(war_pile + [card1, card2])
+        else:
+            print("The war continues!")
+            self.handle_war()
 def main():
     try:
         deck = Deck()
@@ -59,18 +99,19 @@ def main():
         player1 = Player()
         player2 = Player()
         deck.distribute_cards(player1, player2)
-
+        
+        game = GameLogic(player1, player2)
         round = 1
-        while len(player1.deck) > 0 and len(player2.deck) > 0:
+        while len(game.player1.deck) > 0 and len(game.player2.deck) > 0:
             print(f"\n--------------------------------------")
             print(f"Round {round}")
             print("--------------------------------------")
-            play_round(player1, player2)
+            game.play_round()
             input("Press enter to draw a card...\n")
             round += 1
 
         print("\n--------------------------------------")
-        if len(player1.deck) > 0:
+        if len(game.player1.deck) > 0:
             print("Congratulations, you won the game!\n")
         else:
             print("Oh no, AI won the game!\n")
@@ -79,55 +120,6 @@ def main():
     except KeyboardInterrupt:
         print("\nExiting.\n")
 
-def handle_war(player1, player2):
-    face_down_cards = 3
-
-    if len(player1.deck) < face_down_cards + 1 or len(player2.deck) < face_down_cards + 1:
-        face_down_cards = min(len(player1.deck) - 1, len(player2.deck) - 1)
-
-    war_pile = []
-    for _ in range(face_down_cards):
-        war_pile.append(player1.draw_card())
-        war_pile.append(player2.draw_card())
-
-    card1 = player1.draw_card()
-    card2 = player2.draw_card()
-
-    print(f"\nYou draw: {card1[0]} of {card1[1]}")
-    print(f"AI draws: {card2[0]} of {card2[1]}")
-
-    if card_values[card1[0]] > card_values[card2[0]]:
-        print("\nYou win the war!")
-        player1.add_cards(war_pile + [card1, card2])
-    elif card_values[card1[0]] < card_values[card2[0]]:
-        print("\nAI wins the war!")
-        player2.add_cards(war_pile + [card1, card2])
-    else:
-        print("The war continues!")
-        handle_war(player1, player2)
-
-def play_round(player1, player2):
-    card1 = player1.draw_card()
-    card2 = player2.draw_card()
-
-    print("__________________________________")
-    print(f"You draw: {card1[0]} of {card1[1]}")
-    print("AI draws a card...")
-    print("__________________________________\n")
-
-    if card_values[card1[0]] > card_values[card2[0]]:
-        print("\n--------------------------------------")
-        print("You win the round!")
-        print("--------------------------------------\n")
-        player1.add_cards([card1, card2])
-    elif card_values[card1[0]] < card_values[card2[0]]:
-        print("\n--------------------------------------")
-        print("AI wins the round!")
-        print("--------------------------------------\n")
-        player2.add_cards([card1, card2])
-    else:
-        print("It's a war!")
-        handle_war(player1, player2)
 
 if __name__ == "__main__":
     main()
