@@ -4,8 +4,7 @@ import sys
 class Deck: 
     def __init__(self):
         self._deck = self.initialize_deck()
-        self.shuffle_deck()
-        
+
     @property
     def deck(self):
         return self._deck
@@ -15,7 +14,7 @@ class Deck:
         ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace']
         deck = [(rank, suit) for suit in suits for rank in ranks]
         return deck
-    
+
     def shuffle_deck(self):
         random.shuffle(self.deck)
         
@@ -99,16 +98,19 @@ class GameLogic:
 
         if card_values[card1[0]] > card_values[card2[0]]:
             print("\nYou win the war!")
+            print("\n______________________________________")
             self.player1.add_cards(war_pile + [card1, card2])
-            self.player1.rounds_won += 1  # Increment rounds won by player1
+            self.player1.rounds_won += 1 
         elif card_values[card1[0]] < card_values[card2[0]]:
             print("\nAI wins the war!")
+            print("\n______________________________________")
             self.player2.add_cards(war_pile + [card1, card2])
-            self.player2.rounds_won += 1  # Increment rounds won by AI
+            self.player2.rounds_won += 1 
         else:
             print("The war continues!")
+            print("\n______________________________________")
             self.handle_war()
-            
+
 def main():
     play_again = "yes"
     while play_again.lower() == "yes":
@@ -124,7 +126,7 @@ def main():
             while len(game.player1.deck) > 0 and len(game.player2.deck) > 0:
                 game.play_round(round)
                 if len(game.player1.deck) > 0 and len(game.player2.deck) > 0:
-                    input("Press enter to draw a card...\n")  # User has to press enter to proceed to the next round
+                    input("Press enter to draw a card...\n") 
                 round += 1
 
             print("\n--------------------------------------")
@@ -141,7 +143,6 @@ def main():
 
         except KeyboardInterrupt:
             sys.exit("Exiting...")
-
 
 if __name__ == "__main__":
     main()
